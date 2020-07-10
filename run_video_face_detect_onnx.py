@@ -52,6 +52,11 @@ def parse_args():
     parser = argparse.ArgumentParser(description="face detection")
     parser.add_argument(
         "--input", type=str, default="", help="input file path")
+    parser.add_argument(
+        "--model",
+        type=str,
+        default="models/onnx/version-RFB-320.onnx",
+        help="model file path")
     return parser.parse_args()
 
 
@@ -59,7 +64,7 @@ def main():
 
     args = parse_args()
 
-    onnx_path = "models/onnx/version-RFB-320.onnx"
+    onnx_path = args.model
 
     predictor = onnx.load(onnx_path)
     onnx.checker.check_model(predictor)
@@ -88,7 +93,6 @@ def main():
         image = np.transpose(image, [2, 0, 1])
         image = np.expand_dims(image, axis=0)
         image = image.astype(np.float32)
-        # confidences, boxes = predictor.run(image)
         #time_time = time.time()
         confidences, boxes = ort_session.run(None, {input_name: image})
         #        print("cost time: {}".format(time.time() - time_time))
